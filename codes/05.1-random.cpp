@@ -23,7 +23,9 @@ int main()
 
         if (x*x + y*y < 1)
             hits++;
-        
+           
+
+           
         trials++;
 
     }
