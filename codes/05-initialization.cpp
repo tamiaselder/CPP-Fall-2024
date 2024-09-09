@@ -12,6 +12,10 @@ int main()
     //          j  | unsigned int |      6
     //          g  | double       | 10.187
 
+    int i=-116;
+    unsigned int j=6;
+    double g=10.87;
+
     //Task 2: Once Task 1 is complete and tested, comment out the
     //        declarations above and rewrite them using uniform
     //        initialization syntax.
@@ -20,7 +24,7 @@ int main()
     //        and a variable which is declared with an empty uniform
     //        initializer?
 
-    //Task 4: What happens if the wrong type is used inside the initializer?
+    //Task 4: What happens if the wrong type is used inside the initializer
 
     std::cout << "Values: ";
     std::cout << "i = " << i << ", ";
