@@ -7,8 +7,6 @@ int main()
     //Task 1: create a random number between 2 and 3
    
 
-    //Task 2: create a random number between 2 and 3 using C++11 random library
-
     /////////////////////Approximate PI////////////////////////
 
     int hits{0};
