@@ -9,16 +9,18 @@ int main(){
 
     double entered {};
     double max {0};
+    int key {1};
 
-    std::cout << "Enter positive doubles:";
+    std::cout << "Enter positive doubles:" << std::endl;
 
-    while (entered <= 0){
+    while (entered > 0 || key==1){
         std::cin >> entered;
         if (entered>max)
             max=entered;
+        key=0;
     }
 
-    std::cout << "the maximum is" <<max<< std::endl;
+    std::cout << "\nthe maximum is " <<max<< std::endl;
 
     return 0;
 }
