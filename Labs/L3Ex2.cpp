@@ -21,4 +21,5 @@ int main () {
     else 
         cout << "Error, No month associated with that number" << endl;
 
+    return 0;
 }
