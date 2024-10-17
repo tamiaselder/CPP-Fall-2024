@@ -140,8 +140,21 @@ struct InvalidTimeException
            in one place.
 */
 Sailing parse_sailing(std::string const &input_line)
-{
-    /* Your Code Here */
+{   
+    Sailing sailing{};
+    int inlength {input_line.length()};
+    
+
+// check case 1 (10 commas)
+
+    int commas{};
+    for (int i{}; i < inlength; i++){
+        
+
+    }
+
+    
+    return sailing;
 }
 
 /* performance_by_route(sailings)
