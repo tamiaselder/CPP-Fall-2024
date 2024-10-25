@@ -24,17 +24,17 @@ at 2:30pm and arrives at 3:00pm, the duration will be taken to be 60 minutes).
 The input data will be provided in a text file, where each line contains the following data fields,
 separated by commas:
 
-1. Route number
+1. Route number -
 2. Departure ("source") terminal
 3. Arrival ("destination") terminal
-4. Year
-5. Month
-6. Day
-7. Hour of scheduled departure (in 24-hour format)
-8. Minute of scheduled departure
+4. Year -
+5. Month -
+6. Day -
+7. Hour of scheduled departure (in 24-hour format) -
+8. Minute of scheduled departure -
 9. Vessel name
-10. Expected duration (in minutes)
-11. Actual duration (in minutes)
+10. Expected duration (in minutes) -
+11. Actual duration (in minutes) -
 
 Note that the two duration values will always be integer values.
 For example, the input line

@@ -5,6 +5,8 @@
 #include <fstream>   //Needed by read_sailings to work with files
 #include <stdexcept> //Needed by read_sailings to handle exceptions
 #include <iomanip>   //Needed by print_sailing to format output
+#include <algorithm> // for find function
+
 
 /* A structure type to represent a year/month/day combination */
 struct Date
@@ -139,23 +141,91 @@ struct InvalidTimeException
            involved in this function, rather than putting all of the code
            in one place.
 */
+
+bool non_numeric(std::string const &test){
+    if (('0' <= test.at(0) && test.at(0)  <= '9') || test.at(0) == '-')
+        return 0;
+    return 1; 
+}
+
 Sailing parse_sailing(std::string const &input_line)
 {   
     Sailing sailing{};
-    int inlength {input_line.length()};
-    
+    auto inlength {input_line.length()};
+    std::vector<std::string> seperatein{};
 
-// check case 1 (10 commas)
+    // incomplete line and string to vector
 
-    int commas{};
-    for (int i{}; i < inlength; i++){
-        
-
+    unsigned flag{};
+    std::string temp{};
+    for (int i{}; i < inlength; i++){   //loop input string 
+        if (input_line.at(i) == ','){   //store temp string (peice of data) to seperate vector
+            seperatein.push_back(temp);
+            temp.clear();
+        }else if(i == inlength-1){
+            seperatein.push_back(temp);
+            temp.clear();
+        }else{
+            temp.push_back(input_line.at(i));   //add character to temp if not a ',' 
+        }
     }
 
+    // old test 
+    // for (auto out : seperatein)
+    //     std::cout << out;
+    // std::cout << std::endl;
+
+    if(seperatein.size() != 11){   //throw incomplete line exception
+        throw IncompleteLineException{(unsigned int)seperatein.size()};
+    }
+
+
+    // emptyfieldexception
+    for (unsigned int i{}; i < seperatein.size(); i++){
+        auto element = seperatein.at(i);
+
+        bool allwhitespace {1};
+        for (auto ch : element){     // test if str all whitespace
+            if (!std::isspace(ch))
+                allwhitespace = 0;            
+        }
+
+        if (allwhitespace || element.empty()){  // throw exception
+            throw EmptyFieldException {i};
+        }
+    }
+
+    // non numeric for elements below
+    std::vector<int> numindex {0,3,4,5,6,7,9,10};
+    for (auto index : numindex){
+        if (non_numeric(seperatein.at(index)))
+            throw NonNumericDataException {seperatein.at(index)};
+    }
+
+    TimeOfDay time {};
+    time.hour = stoi(seperatein.at(6));
+    time.minute = stoi(seperatein.at(7));
+    if (time.hour < 0 || time.hour > 23 || time.minute < 0 || time.minute > 59)
+        throw InvalidTimeException{time};
+    
+
+    // parse sailing together
+    sailing.route_number = stoi(seperatein.at(0));
+    sailing.source_terminal = seperatein.at(1);
+    sailing.dest_terminal = seperatein.at(2);
+    Date day {stoi(seperatein.at(5)), stoi(seperatein.at(4)), stoi(seperatein.at(3))};
+    sailing.departure_date = day;
+    sailing.scheduled_departure_time = time;
+    sailing.vessel_name = seperatein.at(8);
+    sailing.expected_duration = stoi(seperatein.at(9));
+    sailing.actual_duration = stoi(seperatein.at(10));
+    
     
     return sailing;
 }
+
+
+
 
 /* performance_by_route(sailings)
    Given a vector of Sailing instances (in no particular order), return
@@ -182,7 +252,27 @@ Sailing parse_sailing(std::string const &input_line)
 */
 std::vector<RouteStatistics> performance_by_route(std::vector<Sailing> const &sailings)
 {
-    /* Your Code Here */
+    std::vector<RouteStatistics> stats{};
+    // hold each part of route statistics in a seperate vector until end
+    std::vector<int> nums{};
+    
+
+    
+    for (auto sailing : sailings){
+        int routenum {sailing.route_number};
+
+        // find if route number is in vector of route numbers 
+        auto first = nums.begin();
+        auto last = nums.end();
+        auto it = std::find(first, last, sailing.route_number);
+
+        if (it != last){ //if num is not in list so far, add elements to vectors 
+            
+            
+        }
+    }
+
+    return stats;
 }
 
 /* best_days(sailings)
@@ -210,6 +300,8 @@ std::vector<RouteStatistics> performance_by_route(std::vector<Sailing> const &sa
 */
 std::vector<DayStatistics> best_days(std::vector<Sailing> const &sailings)
 {
+    std::vector<DayStatistics> blank{};
+    return blank;
     /* Your Code Here */
 }
 
@@ -234,6 +326,8 @@ std::vector<DayStatistics> best_days(std::vector<Sailing> const &sailings)
 */
 std::vector<DayStatistics> worst_days(std::vector<Sailing> const &sailings)
 {
+    std::vector<DayStatistics> blank{};
+    return blank;
     /* Your Code Here */
 }
 

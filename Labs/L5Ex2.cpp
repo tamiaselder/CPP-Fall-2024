@@ -50,10 +50,10 @@ void print_matrix(Matrix A){
 }
 
 int main () {
-    cout << "HELOOOO" << endl;
+    //cout << "HELOOOO" << endl;
     Matrix A{};
     Matrix B{};
-    A = initilize_zero(2,5,A);
+    A = initilize_zero(2,2,A);
     B = initilize_identity(3,B);
     print_matrix(A);
     print_matrix(B);
