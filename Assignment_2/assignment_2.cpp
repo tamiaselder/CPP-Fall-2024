@@ -161,7 +161,8 @@ Sailing parse_sailing(std::string const &input_line)
         if (input_line.at(i) == ','){   //store temp string (peice of data) to seperate vector
             seperatein.push_back(temp);
             temp.clear();
-        }else if(i == inlength-1){
+        }else if(i == inlength - 1){ // last character in input string case
+            temp.push_back(input_line.at(i));
             seperatein.push_back(temp);
             temp.clear();
         }else{
@@ -208,7 +209,7 @@ Sailing parse_sailing(std::string const &input_line)
         throw InvalidTimeException{time};
     
 
-    // parse sailing together
+    // parse sailing together.. place all elements in the seperated vector into their proper container in the sailing struct
     sailing.route_number = stoi(seperatein.at(0));
     sailing.source_terminal = seperatein.at(1);
     sailing.dest_terminal = seperatein.at(2);
@@ -251,9 +252,9 @@ Sailing parse_sailing(std::string const &input_line)
 */
 std::vector<RouteStatistics> performance_by_route(std::vector<Sailing> const &sailings)
 {
-    std::vector<RouteStatistics> stats{};
+    std::vector<RouteStatistics> preformancebyroute{};
     // hold each part of route statistics in a seperate vector until end
-    std::vector<int> nums{};
+    std::vector<int> nums{0};
     
     for (auto sailing : sailings){
         RouteStatistics temp{};
@@ -264,24 +265,25 @@ std::vector<RouteStatistics> performance_by_route(std::vector<Sailing> const &sa
         auto last = nums.end();
         auto it = std::find(first, last, sailing.route_number);
 
-        if (it != nums.end()){ //if num is not in list so far, add elements to vectors (find returns iterator to last position)
+        if (it != nums.end()){ // if a sailing with routenum already exists in preformancebyroute
+            auto index = it - nums.begin() - 1; // position that the routestatsiscs element will be in in the preformancebyroute vector 
+            preformancebyroute.at(index).total_sailings += 1; // add to total sails
+            if (sailing.actual_duration >= (sailing.expected_duration + 5)){
+                preformancebyroute.at(index).late_sailings += 1; // add to late sails if late
+            }
+        }else{                              //if num is not in list so far, add elements to vectors (find returns iterator to last position)
             nums.push_back(routenum); // store routenum in vector
-            temp.route_number = routenum; // populate temporary routstats with values
+            temp.route_number = routenum; // populate temporary routstats element with values
             temp.total_sailings += 1;
-            if (sailing.actual_duration >= (sailing.expected_duration + 5))
+            std::cout << sailing.actual_duration << " " << sailing.expected_duration <<std::endl;
+            if (sailing.actual_duration >= (sailing.expected_duration + 5)){
                 temp.late_sailings +=1;
-            stats.push_back(temp); // add to routestats vector
-
-        }else{
-            auto index = it - nums.begin(); // position that the routestatsiscs element will be in in the stats vector
-            stats.at(index).total_sailings += 1; // add to tot sails
-
-            if (sailing.actual_duration >= (sailing.expected_duration + 5))
-                stats.at(index).late_sailings += 1; // add to late sails if late
+            }
+            preformancebyroute.push_back(temp); // add to preformancebyroute vector            
         }
     }
 
-    return stats;
+    return preformancebyroute;
 }
 
 /* best_days(sailings)
