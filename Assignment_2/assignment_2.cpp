@@ -255,9 +255,8 @@ std::vector<RouteStatistics> performance_by_route(std::vector<Sailing> const &sa
     // hold each part of route statistics in a seperate vector until end
     std::vector<int> nums{};
     
-
-    
     for (auto sailing : sailings){
+        RouteStatistics temp{};
         int routenum {sailing.route_number};
 
         // find if route number is in vector of route numbers 
@@ -265,9 +264,20 @@ std::vector<RouteStatistics> performance_by_route(std::vector<Sailing> const &sa
         auto last = nums.end();
         auto it = std::find(first, last, sailing.route_number);
 
-        if (it != last){ //if num is not in list so far, add elements to vectors 
-            
-            
+        if (it != nums.end()){ //if num is not in list so far, add elements to vectors (find returns iterator to last position)
+            nums.push_back(routenum); // store routenum in vector
+            temp.route_number = routenum; // populate temporary routstats with values
+            temp.total_sailings += 1;
+            if (sailing.actual_duration >= (sailing.expected_duration + 5))
+                temp.late_sailings +=1;
+            stats.push_back(temp); // add to routestats vector
+
+        }else{
+            auto index = it - nums.begin(); // position that the routestatsiscs element will be in in the stats vector
+            stats.at(index).total_sailings += 1; // add to tot sails
+
+            if (sailing.actual_duration >= (sailing.expected_duration + 5))
+                stats.at(index).late_sailings += 1; // add to late sails if late
         }
     }
 
