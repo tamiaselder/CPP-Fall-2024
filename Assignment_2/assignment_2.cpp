@@ -309,11 +309,64 @@ std::vector<RouteStatistics> performance_by_route(std::vector<Sailing> const &sa
      corresponds to a different date (meeting the criteria of "best days" above).
      If the input vector of sailings is empty, the return value will be an empty vector.
 */
+
+bool matchdate (Date firstday, Date secondday){ // guess what it does lol
+    bool matchdate {0};
+    if (firstday.year == secondday.year)
+        if (firstday.month == secondday.month)
+            if (firstday.day == secondday.day)
+                matchdate = 1;
+    return matchdate;
+}
+
 std::vector<DayStatistics> best_days(std::vector<Sailing> const &sailings)
 {
-    std::vector<DayStatistics> blank{};
-    return blank;
-    /* Your Code Here */
+    std::vector<Date> days{};
+    std::vector<DayStatistics> alldaystatistics{};
+
+    // get vector of all day stats
+    for (auto sailing : sailings){
+        Date day {sailing.departure_date};
+        int late{0};
+        bool newday {1}; //flag if the current day is new (not already in stats vector)
+
+        for (int i{0}; i < days.size(); i++){
+            Date existingday {days.at(i)};
+            if (matchdate(day,existingday)){
+                if (sailing.actual_duration >= sailing.expected_duration + 5)
+                late = 1; 
+                alldaystatistics.at(i).total_sailings ++;
+                alldaystatistics.at(i).late_sailings +=late;
+                newday = 0;
+            }
+        }
+        if(newday){
+            if (sailing.actual_duration >= sailing.expected_duration + 5)
+                late = 1;
+            DayStatistics temp {day, 1, late};
+            alldaystatistics.push_back(temp);
+            days.push_back(day);
+            }
+    }
+
+    std::vector<DayStatistics> best_days{};
+    int numerator {alldaystatistics.at(0).late_sailings}; //top of best last ratio
+    int denominator {alldaystatistics.at(0).total_sailings};   //bottom of best last ratio
+
+    for (auto daystat : alldaystatistics){
+        int cmpnumerator {daystat.late_sailings}; // top of tested ratio
+        int cmpdenominator {daystat.total_sailings};// bottom of tested ratio
+        if (numerator*cmpdenominator - denominator*cmpnumerator == 0){ // if best last ratio is the same as tested ratio (integer comparison using multiplication to avoid mess at the end of floats)
+            best_days.push_back(daystat);       // add day to bestdays vector
+        }else if (numerator*cmpdenominator > denominator*cmpnumerator){ // new ratio better than old ratio
+            best_days.clear();
+            best_days.push_back(daystat);
+            numerator = cmpnumerator;
+            denominator = cmpdenominator;
+        }
+    }
+
+    return best_days;
 }
 
 /* worst_days(sailings)
@@ -337,9 +390,52 @@ std::vector<DayStatistics> best_days(std::vector<Sailing> const &sailings)
 */
 std::vector<DayStatistics> worst_days(std::vector<Sailing> const &sailings)
 {
-    std::vector<DayStatistics> blank{};
-    return blank;
-    /* Your Code Here */
+        std::vector<Date> days{};
+    std::vector<DayStatistics> alldaystatistics{};
+
+    // get vector of all day stats
+    for (auto sailing : sailings){
+        Date day {sailing.departure_date};
+        int late{0};
+        bool newday {1}; //flag if the current day is new (not already in stats vector)
+
+        for (int i{0}; i < days.size(); i++){
+            Date existingday {days.at(i)};
+            if (matchdate(day,existingday)){
+                if (sailing.actual_duration >= sailing.expected_duration + 5)
+                late = 1; 
+                alldaystatistics.at(i).total_sailings ++;
+                alldaystatistics.at(i).late_sailings +=late;
+                newday = 0;
+            }
+        }
+        if(newday){
+            if (sailing.actual_duration >= sailing.expected_duration + 5)
+                late = 1;
+            DayStatistics temp {day, 1, late};
+            alldaystatistics.push_back(temp);
+            days.push_back(day);
+            }
+    }
+
+    std::vector<DayStatistics> worst_days{};
+    int numerator {alldaystatistics.at(0).late_sailings}; //top of worst last ratio
+    int denominator {alldaystatistics.at(0).total_sailings};   //bottom of worst last ratio
+
+    for (auto daystat : alldaystatistics){
+        int cmpnumerator {daystat.late_sailings}; // top of tested ratio
+        int cmpdenominator {daystat.total_sailings};// bottom of tested ratio
+        if (numerator*cmpdenominator - denominator*cmpnumerator == 0){ // if worst last ratio is the same as tested ratio (integer comparison using multiplication to avoid mess at the end of floats)
+            worst_days.push_back(daystat);       // add day to worstdays vector
+        }else if (numerator*cmpdenominator < denominator*cmpnumerator){ // new ratio worse than old ratio
+            worst_days.clear();         //clear and add new worst day.
+            worst_days.push_back(daystat);
+            numerator = cmpnumerator;
+            denominator = cmpdenominator;
+        }
+    }
+
+    return worst_days;
 }
 
 /* You do not have to understand or modify these functions (although they
