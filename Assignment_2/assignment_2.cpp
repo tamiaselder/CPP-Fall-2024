@@ -387,6 +387,8 @@ std::vector<DayStatistics> best_days(std::vector<Sailing> const &sailings)
      corresponds to a different date (meeting the criteria of "worst days" above).
      If the input vector of sailings is empty, the return value will be an empty vector.
 */
+
+// worst days is the exact same as best days except a less than on line431
 std::vector<DayStatistics> worst_days(std::vector<Sailing> const &sailings)
 {
         std::vector<Date> days{};
