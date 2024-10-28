@@ -275,7 +275,6 @@ std::vector<RouteStatistics> performance_by_route(std::vector<Sailing> const &sa
             nums.push_back(routenum); // store routenum in vector
             temp.route_number = routenum; // populate temporary routstats element with values
             temp.total_sailings += 1;
-            std::cout << sailing.actual_duration << " " << sailing.expected_duration <<std::endl;
             if (sailing.actual_duration >= (sailing.expected_duration + 5)){
                 temp.late_sailings +=1;
             }
