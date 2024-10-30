@@ -41,22 +41,22 @@ int main()
     std::cout << std::endl;
 
     /* Task 4a: Search for the values "Lemon" and "Lime" using .contains */
-    if (fruit.contains("Lemon"))
-    {
-        std::cout << "lemon is there" << std::endl;
-    }
-    else
-    {
-        std::cout << "lemon is not there" << std::endl;
-    }
-    if (fruit.contains("Lime"))
-    {
-        std::cout << "Lime is there" << std::endl;
-    }
-    else
-    {
-        std::cout << "Lime is not there" << std::endl;
-    }
+    // if (fruit.contains("Lemon"))
+    // {
+    //     std::cout << "lemon is there" << std::endl;
+    // }
+    // else
+    // {
+    //     std::cout << "lemon is not there" << std::endl;
+    // }
+    // if (fruit.contains("Lime"))
+    // {
+    //     std::cout << "Lime is there" << std::endl;
+    // }
+    // else
+    // {
+    //     std::cout << "Lime is not there" << std::endl;
+    // }
 
     std::cout << std::endl;
     std::cout << std::endl;
