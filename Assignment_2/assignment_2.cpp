@@ -333,7 +333,7 @@ std::vector<DayStatistics> best_days(std::vector<Sailing> const &sailings)
             Date existingday {days.at(i)};
             if (matchdate(day,existingday)){
                 if (sailing.actual_duration >= sailing.expected_duration + 5)
-                late = 1; 
+                    late = 1; 
                 alldaystatistics.at(i).total_sailings ++;
                 alldaystatistics.at(i).late_sailings +=late;
                 newday = 0;
