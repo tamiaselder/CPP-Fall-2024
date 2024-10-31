@@ -347,6 +347,7 @@ std::vector<DayStatistics> best_days(std::vector<Sailing> const &sailings)
             days.push_back(day);
             }
     }
+    
 
     std::vector<DayStatistics> best_days{};
     int numerator {alldaystatistics.at(0).late_sailings}; //top of best last ratio
