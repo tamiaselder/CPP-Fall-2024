@@ -85,7 +85,20 @@ int main()
 
     std::cout << "R1: ";
     R1.print();
+    {
+        Rectangle unit{Rectangle::create_unit_square()};
+        unit.print();
 
+        // Rectangle *unit = new Rectangle(Rectangle::create_unit_square());
+        // unit->print();
+
+        // int *v = malloc(10 * sizeof(int));
+        // free(v);
+
+        std::cout << "bla" << std::endl;
+        // delete unit;
+        // unit = new Rectangle{Rectangle::create_unit_square()};
+    }
     std::cout << "R2: ";
     R2.print();
     std::cout << "Area of R2: " << R2.get_area() << std::endl;
