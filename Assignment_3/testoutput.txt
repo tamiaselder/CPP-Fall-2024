@@ -1,0 +1,93 @@
+Test 1: Adding some students
+  Test 1a: Attempting to create a duplicate student
+    Caught DBDuplicateError: Behaviour is correct.
+
+Test 2: Retrieving student list.
+  Students are: V00123456 V00123457 V00123458
+
+Test 3: Enrolling students in courses.
+  Test 3a: Attempting to enroll an invalid student.
+    Caught StudentNotFoundError (V00999999): Behaviour is correct.
+  Test 3b: Attempting a duplicate enrollment.
+    Caught DBDuplicateError: Behaviour is correct.
+
+Test 4: Retrieving enrollment records.
+  For V00123456:
+    Course: CSC 116  Term: 202209
+    Course: MATH 204  Term: 202209
+    Course: MECH 200  Term: 202209
+  For V00123457:
+    Course: CSC 116  Term: 202201
+    Course: CSC 116  Term: 202209
+    Course: MATH 204  Term: 202209
+
+Test 5: Retrieving courses taken by students.
+  For V00123456: CSC 116 MATH 204 MECH 200
+  For V00123457: CSC 116 MATH 204
+
+Test 6: Adding more students and enrollments
+
+Test 7: Assigning some grades
+  Test 7a: Attempting to grade an invalid student.
+    Caught StudentNotFoundError (V00999999): Behaviour is correct.
+  Test 7b: Attempting to grade an unenrolled student.
+    Did not catch EnrollmentNotFoundError: Behaviour is incorrect.
+  Test 7c: Attempting to assign an invalid grade.
+    Caught InvalidGradeError (187): Behaviour is correct.
+
+Test 8: Retrieving student grades.
+  Grade for V00123456 in CSC 116 in 202209: 67
+  Grade for V00123457 in CSC 116 in 202201: 93
+  Grade for V00123457 in CSC 116 in 202209: 87
+  Test 8a: Attempting to retrieve a grade for an unenrolled student.
+   Caught EnrollmentNotFoundError (V00123458, CSC 116, 202209): Behaviour is correct.
+  Test 8b: Attempting to retrieve an unassigned grade.
+    Grade for V00123458 for CSC 116 in 202201: 0
+    Did not catch MissingGradeError: Behaviour is incorrect.
+
+Test 9: Retrieving transcripts.
+  For V00123456:
+    Course: CSC 116  Grade: 67
+    Course: MATH 204  Grade: 92
+    Course: MECH 200  Grade: 85
+  For V00123457:
+    Course: CSC 116  Grade: 93
+    Course: MATH 204  Grade: 0
+  For V00123458:
+    Course: CSC 116  Grade: 0
+  This is incorrect (the transcript should be empty).
+
+Test 10: Computing student averages.
+  Average for V00123456: 81.3333
+  Average for V00123457: 46.5
+  Test 10a: Attempting to compute average for a student with no grades.
+    Average for V00123458: 0
+    Did not catch EmptyAverageError: Behavior is incorrect
+
+Test 11: Retrieving enrollment by course.
+  For CSC 116 in 202201: V00123457 V00123458
+  For CSC 116 in 202209: V00123456 V00123457 V00123459
+  For MATH 204 in 202209: V00123456 V00123457 V00123460
+
+Test 12: Retrieving grades by course.
+  For CSC 116 in 202201:
+    Student: V00123457  Grade: 93
+    Student: V00123458  Grade: 0
+  For CSC 116 in 202209:
+    Student: V00123456  Grade: 67
+    Student: V00123457  Grade: 87
+    Student: V00123459  Grade: 78
+  For MATH 204 in 202209:
+    Student: V00123456  Grade: 92
+    Student: V00123457  Grade: 0
+    Student: V00123460  Grade: 90
+
+Test 13: Computing course averages.
+  Average for CSC 116 in 202201: 46.5
+Test 13: Computing course averages.
+Test 13: Computing course averages.
+  Average for CSC 116 in 202201: 46.5
+  Average for CSC 116 in 202209: 77.3333
+  Test 13a: Attempting to compute average for a course with no grades.
+    Average for MATH 342 in 202209: 0
+    Did not catch EmptyAverageError: Behavior is incorrect

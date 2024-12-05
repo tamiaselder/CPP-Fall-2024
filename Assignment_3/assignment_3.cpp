@@ -24,6 +24,14 @@
 #include <set>
 #include <map>
 #include <iostream>
+#include <vector>
+
+struct enrollment_record{
+    std::string student_id{};
+    std::string course_id{};
+    std::string term_code{};
+    int grade{-1};
+};
 
 /* Definitions of exception objects */
 /* Do not modify these definitions in any way */
@@ -250,9 +258,8 @@ public:
     /* Do not modify any of the code above this line */
 
 private:
-    /* Your code here */
-    /* (Add any private data or functions you need)*/
-    /* (You may also add new #include directives at the top of the file) */
+    std::set <std::string> students;
+    std::vector <enrollment_record> all_enrolments;
 };
 
 StudentDB::StudentDB()
@@ -262,62 +269,322 @@ StudentDB::StudentDB()
 
 void StudentDB::add_student(std::string const &student_id)
 {
-    /* Your code here */
+    if (students.find(student_id) != students.end())
+        throw DBDuplicateError{};
+    students.insert(student_id);
 }
 
 std::set<std::string> StudentDB::all_students()
 {
-    /* Your code here */
+    return students;
 }
 
 void StudentDB::enroll(std::string const &student_id, std::string const &course_id, std::string const &term)
-{
-    /* Your code here */
+{   
+    for (auto flag :all_enrolments){
+        if (student_id == flag.student_id)
+            if (course_id == flag.course_id)
+                if (term == flag.term_code)
+                    throw DBDuplicateError{};
+    }
+    if (students.find(student_id) == students.end())
+        throw StudentNotFoundError{student_id};
+    
+    enrollment_record temp {student_id,course_id,term};
+    all_enrolments.push_back(temp);
+    
+    /* enroll(student_id, course_id, term)
+       Given a student ID, course ID (e.g. "CSC 116") and term code
+       (e.g. "202209"), add a record of the student being enrolled
+       in the provided course/term.
+
+       If the student is already enrolled in the provided course
+       during the provided term, throw an instance of DBDuplicateError.
+
+       If the student does not exist in the database, throw an instance
+       of StudentNotFoundError containing the student ID.
+    */
 }
 
 std::set<std::pair<std::string, std::string>> StudentDB::get_student_enrollment_records(std::string const &student_id)
 {
-    /* Your code here */
+    std::set<std::pair<std::string, std::string>> student_enrollment_records{};
+
+    if (students.find(student_id) == students.end())
+        throw StudentNotFoundError{student_id};
+
+    for (auto enrolment :all_enrolments){
+        if (enrolment.student_id == student_id){
+            std::pair<std::string, std::string> temp {enrolment.course_id,enrolment.term_code};
+            student_enrollment_records.insert(temp);
+        }
+    }
+    return student_enrollment_records;
+
+    /* get_student_enrollment_records(student_id)
+       Given a student ID, return a set of (course_id, term) pairs
+       reflecting all of the enrollment data for the provided student.
+
+       Note that a student may be enrolled in the same course in multiple
+       terms, and in such cases there will be a separate record in the
+       result for each term in which the student was enrolled.
+
+       If the student does not exist in the database, throw an instance
+       of StudentNotFoundError containing the student ID.
+
+       If the student does exist but has no enrollment data, return an
+       empty set.
+    */
 }
 
 std::set<std::string> StudentDB::courses_taken_by_student(std::string const &student_id)
 {
-    /* Your code here */
+    std::set<std::string> courses_taken{};
+
+    if (students.find(student_id) == students.end())
+        throw StudentNotFoundError{student_id};
+
+    for (auto enrolment :all_enrolments){
+        if (enrolment.student_id == student_id){
+            std::string temp {enrolment.course_id};
+            courses_taken.insert(temp);
+        }
+    }
+    return courses_taken;
+
+    /* courses_taken_by_student(student_id)
+    Given a student ID, return a set containing the course IDs of every
+    course in which the student is enrolled (whether or not the student
+    has been assigned a grade in that course).
+
+    If the student does not exist in the database, throw an instance
+    of StudentNotFoundError containing the student ID.
+
+    If the student does exist but has no enrollment data, return an empty set.
+    */
 }
 
 void StudentDB::assign_grade(std::string const &student_id, std::string const &course_id, std::string const &term, unsigned int grade)
 {
-    /* Your code here */
+    if (students.find(student_id) == students.end())
+        throw StudentNotFoundError{student_id};
+
+    bool not_enrolled{1};
+    for (auto enrolment : all_enrolments){
+        if (student_id == enrolment.student_id) 
+            if (course_id == enrolment.course_id)
+                if (term == enrolment.term_code)
+                    not_enrolled = 0;
+    }
+    if (not_enrolled)
+        throw EnrollmentNotFoundError {student_id, course_id, term};
+
+    if (grade>100)
+        throw InvalidGradeError {grade};
+          
+    for (int i{0}; i<all_enrolments.size(); i++){
+        if (student_id == all_enrolments.at(i).student_id)
+            if (course_id == all_enrolments.at(i).course_id)
+                if (term == all_enrolments.at(i).term_code)
+                    all_enrolments.at(i).grade = grade;
+    }
+
+    /* assign_grade(student_id, course_id, term, grade)
+       Given enrollment details for a particular student/course/term, set the
+       grade associated with that enrollment to the provided value. If a grade
+       was previously set for this student/course/term, overwrite it with the
+       provided value.
+
+       Note that a student might be enrolled in the same course in different
+       terms, so this function must ensure that only the grade for the specified
+       offering is set.
+
+       If the student does not exist in the database, throw an instance
+       of StudentNotFoundError containing the student ID.
+
+       If the student does exist, but is not already enrolled in the provided
+       course/term, throw an instance of EnrollmentNotFoundError containing
+       the student/course/term.
+
+       If the grade is greater than 100, throw an InvalidGradeError containing
+       the grade value.
+    */
 }
 
 unsigned int StudentDB::get_grade(std::string const &student_id, std::string const &course_id, std::string const &term)
 {
-    /* Your code here */
+    if (students.find(student_id) == students.end())
+        throw StudentNotFoundError{student_id};
+    
+    for (int i{0}; i<all_enrolments.size(); i++){
+        if (student_id == all_enrolments.at(i).student_id)
+            if (course_id == all_enrolments.at(i).course_id)
+                if (term == all_enrolments.at(i).term_code){
+                    if (all_enrolments.at(i).grade == -1)
+                        throw MissingGradeError{};
+                    return all_enrolments.at(i).grade;
+                }
+    }
+    
+    throw EnrollmentNotFoundError {student_id, course_id, term};
+    /* get_grade(student_id, course_id, term)
+       Given a student ID, course ID and term, retrieve the assigned grade for
+       the provided student/course/term.
+
+       If the student does not exist in the database, throw an instance
+       of StudentNotFoundError containing the student ID.
+
+       If the student does exist, but is not already enrolled in the provided
+       course/term, throw an instance of EnrollmentNotFoundError containing
+       the student/course/term.
+
+       If the student is enrolled in the provided course/term but has not been
+       assigned a grade, throw an instance of MissingGradeError.
+
+    */
 }
 
 std::map<std::string, unsigned int> StudentDB::student_transcript_by_course(std::string const &student_id)
-{
-    /* Your code here */
+{   
+    if (students.find(student_id) == students.end())
+        throw StudentNotFoundError{student_id};
+
+    std::map<std::string, unsigned int> student_transcript{};
+    for (auto enrolment :all_enrolments){
+        if (student_id == enrolment.student_id)
+            if (student_transcript.count(enrolment.course_id)){
+                if (student_transcript.at(enrolment.course_id) < enrolment.grade)
+                    student_transcript.at(enrolment.course_id) = enrolment.grade;
+            }else{
+            student_transcript[enrolment.course_id] = enrolment.grade;
+            }
+    }
+    return student_transcript;
+    /* student_transcript_by_course(student_id)
+       Given a student ID, return a mapping of course IDs to grades.
+       The result will only contain entries for courses in which the student
+       has at least one assigned grade.
+
+       If a student has received multiple grades for the same course ID
+       (due to taking the course in multiple terms), only store the _highest_
+       grade received in the resulting map.
+
+       If the student does not exist in the database, throw an instance
+       of StudentNotFoundError containing the student ID.
+
+       If the student does exist but does not have any assigned grades,
+       return an empty map.
+    */
 }
 
 double StudentDB::compute_student_average(std::string const &student_id)
 {
-    /* Your code here */
+    if (students.find(student_id) == students.end())
+        throw StudentNotFoundError{student_id};
+
+    std::map<std::string, unsigned int> transcript {StudentDB::student_transcript_by_course(student_id)};
+    if (transcript.empty())
+        throw EmptyAverageError{};
+
+    double student_average{};
+    int num_grades{};
+    for (auto course_grade : transcript){
+        student_average += course_grade.second;
+        num_grades ++;
+    }
+    student_average /= num_grades;
+    return student_average;
+
+    /* compute_student_average(student_id)
+       Given a student ID, compute the average percentage (between 0 and 100)
+       of the assigned grades in each of the student's courses.
+
+       If a student has received multiple grades for the same course ID
+       (due to taking the course in multiple terms), incorporate only the
+       _highest_ recorded grade for each course in the average.
+
+       If the student does not exist in the database, throw an instance
+       of StudentNotFoundError containing the student ID.
+
+       If the student does exist but has no assigned grades, throw
+       an instance of EmptyAverageError.
+    */
 }
 
 std::set<std::string> StudentDB::enrolled_students(std::string const &course_id, std::string const &term)
 {
-    /* Your code here */
+    std::set<std::string> students_in_course{};
+
+    for (auto enrolement: all_enrolments){
+        if (enrolement.course_id == course_id)
+            if (enrolement.term_code == term){
+                students_in_course.insert(enrolement.student_id);
+            }
+    }
+    return students_in_course;
+    /* enrolled_students(course_id, term)
+       Given a course ID (e.g. "CSC 116") and a term code (e.g. "202209"),
+       return a set of all students who are enrolled in the provided course
+       in the provided term (whether or not they have been assigned a grade).
+
+       If there are no entries in the database for the provided course/term,
+       return an empty set.
+    */
 }
 
 std::map<std::string, unsigned int> StudentDB::course_grades(std::string const &course_id, std::string const &term)
 {
-    /* Your code here */
+    std::map<std::string, unsigned int> grades_by_course{};
+
+    for (auto enrolement: all_enrolments){
+        if (enrolement.course_id == course_id)
+            if (enrolement.term_code == term)
+                if (enrolement.grade != -1)
+                    grades_by_course.insert({enrolement.student_id, enrolement.grade});
+    }
+    return grades_by_course;
+
+    /* course_grades(course_id, term)
+       Given a course ID (e.g. "CSC 116") and a term code (e.g. "202209"),
+       return a mapping which maps the student ID of every student
+       enrolled in the given course/term to their grade.
+
+       The result must include every student enrolled in the provided
+       course/term who has been assigned a grade, but not include students
+       who are enrolled but have no assigned grade.
+
+       If there are no entries in the database for the provided course/term,
+       return an empty map.
+    */
 }
 
 double StudentDB::compute_course_average(std::string const &course_id, std::string const &term)
 {
-    /* Your code here */
+    std::map<std::string, unsigned int> grades_for_course {StudentDB::course_grades(course_id,term)};
+
+    if (grades_for_course.empty())
+        throw EmptyAverageError{};
+
+    double course_average{};
+    int num_students{};
+
+    for (auto student_grade : grades_for_course){
+        course_average += student_grade.second;
+        num_students ++;
+    }
+    course_average /= num_students;
+    return course_average;
+
+    /* compute_course_average(course_id, term)
+       Given a student ID, compute the average percentage (between 0 and 100)
+       of all assigned grades for the provided course in the provided term.
+
+       Only those students who have assigned grades for the provided course/term
+       will be incorporated into the average.
+
+       If there are no grades assigned in the database for the provided
+       course/term, throw an instance of EmptyAverageError
+    */
 }
 
 /*
