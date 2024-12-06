@@ -452,11 +452,13 @@ std::map<std::string, unsigned int> StudentDB::student_transcript_by_course(std:
     std::map<std::string, unsigned int> student_transcript{};
     for (auto enrolment :all_enrolments){
         if (student_id == enrolment.student_id)
-            if (student_transcript.count(enrolment.course_id)){
-                if (student_transcript.at(enrolment.course_id) < enrolment.grade)
-                    student_transcript.at(enrolment.course_id) = enrolment.grade;
-            }else{
-            student_transcript[enrolment.course_id] = enrolment.grade;
+            if (enrolment.grade!= -1){
+                if (student_transcript.count(enrolment.course_id)){
+                    if (student_transcript.at(enrolment.course_id) < enrolment.grade)
+                        student_transcript.at(enrolment.course_id) = enrolment.grade;
+                }else{
+                student_transcript[enrolment.course_id] = enrolment.grade;
+                }
             }
     }
     return student_transcript;
